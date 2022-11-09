@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Story App</string>
+    <string name="settings">Pengaturan</string>
+    <string name="confirmation_message">Apa kamu yakin?</string>
+    <string name="login">Login</string>
+    <string name="login_page_message">Jelajahi semua pengalaman dan cerita siswa selama belajar di Dicoding</string>
+    <string name="welcome">Selamat Datang</string>
+    <string name="error_email">Alamat email tidak valid</string>
+    <string name="error_password">Kata sandi minimum 6 karakter</string>
+    <string name="register">Daftar</string>
+    <string name="create_account_question">Belum punya akun?</string>
+    <string name="register_title">Buat akun</string>
+    <string name="register_page_message">Ayo mulai tulis ceritamu sambil belajar di Dicoding.</string>
+    <string name="have_account_question">Sudah memiliki akun?</string>
+    <string name="story_photo">Foto Cerita</string>
+    <string name="error_result">Terjadi kesalahan, tidak dapat terhubung ke API.</string>
+    <string name="error_occurred">Sebuah kesalahan telah terjadi!</string>
+    <string name="add_story">Tambahkan cerita</string>
+    <string name="post_new_story_title">Posting cerita baru</string>
+    <string name="select_image_from">Pilih gambar dari</string>
+    <string name="write_description">Tulis deskripsi</string>
+    <string name="description">Deskripsi</string>
+    <string name="post_story">Posting Cerita</string>
+    <string name="login_failed_message">Login gagal, silakan coba lagi!</string>
+    <string name="logout">Logout</string>
+    <string name="register_success_message">Registrasi berhasil!</string>
+    <string name="register_failed_message">Registrasi gagal!</string>
+    <string name="name">Nama</string>
+    <string name="email">Email</string>
+    <string name="password">Kata Sandi</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="choose_picture">Pilih gambar</string>
+    <string name="empty_field">Silakan isi kolom %s!</string>
+    <string name="empty_field_image">Silakan pilih gambar!</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="exit">Keluar</string>
+    <string name="story">Cerita %s</string>
+    <string name="upload_success">Cerita berhasil di upload!</string>
+    <string name="upload_failed">Cerita gagal di upload!</string>
+</resources>
