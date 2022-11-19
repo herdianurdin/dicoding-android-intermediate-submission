@@ -1,0 +1,93 @@
+Unit Test
+1. SplashViewModel
+=> Test auth token kosong
+    * Membuat nilai kembalian dari method "getAuthToken" adalah "expectedToken" bernilai null.
+    * Dapatkan nilai "actualToken" dengan menjalankan method "getAuthToken()".
+    * Memastikan bahwa method "getAuthToken()" telah dijalankan.
+    * Mengecek apakah nilai "actualToken" bernilai null.
+=> Test auth token berhasil
+    * Membuat nilai kembalian dari method "getAuthToken" adalah "expectedToken" bernilai "dummyToken"
+    * Dapatkan nilai "actualToken" dengan menjalankan method "getAuthToken()".
+    * Memastikan bahwa method "getAuthToken()" telah dijalankan.
+    * Mengecek apakah nilai "actualToken" sama dengan nilai "dummyToken"
+
+2. LoginViewModel
+=> Test login gagal
+    * Membuat nilai kembalian dari method "userLogin" adalah "expectedResponse" bernilai failure.
+    * Dapatkan nilai "actualResponse" dengan menjalankan method "userLogin".
+    * Memastikan bahwa method "userLogin" telah dijalankan.
+    * Mengecek apakah nilai "actualResponse.isFailure" bernilai true.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onFailure" tidak bernilai null.
+=> Test login berhasil
+    * Membuat nilai kembalian dari method "userLogin" adalah "expectedResponse" bernilai "dummyLoginResponse".
+    * Dapatkan nilai "actualResponse" dengan menjalnakna method "userLogin"
+    * Memastikan bahwa method "userLogin" telah dijalankan.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai true.
+    * Mengecek apakah nilai "actualResponse.isFailure" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onSuccess" tidak null dan sama dengan nilai "dummyLoginResponse".
+=> Test menyimpan token di lokal berhasil.
+    * Menyimpan token di lokal dengan method "storeAuthToken"
+    * Memastikan bahwa method "storeAuthToken" telah dijalankan.
+
+3. RegisterViewModel
+=> Test registrasi gagal
+    * Membuat nilai kembalian dari method "userRegister" adalah "expectedResposne" bernilai failure.
+    * Dapatkan nilai "actualResponse" dengan menjalankan method "userRegister".
+    * Memastikan bahwa method "userRegister" telah dijalankan.
+    * Mengecek apakah nilai "actualResponse.isFailure" bernilai true.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onFailure" tidak bernilai null.
+=> Test registrasi berhasil
+    * Membuat nilai kembalian dari method "userRegister" adalah "expectedResponse" bernilai "dummyRegisterResponse".
+    * Dapatkan nilai "actualResponse" dengan menjalankan method "userRegister".
+    * Memastikan bahwa method "userRegister" telah dijalankan.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai true.
+    * Mengecek apakah nilai "actualResponse.isFailure" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onSuccss" tidak null dan sama dengan nilai "dummyRegisterResponse".
+
+4. HomeViewModel
+=> Test mendapat semua data cerita
+    * Membuat nilai kembalian dari method "getAllStories" adalah "stories" bernilai "dummyStories".
+    * Dapatkan nilai "actualStories" dengan menjalankan method "getAllStories".
+    * Memastikan bahwa method "getAllStories" telah dijalankan.
+    * Menyiapkan AsyncPagingDataDiffer dan mengisi datanya dengan "actualStories".
+    * Mengecek apakah nilai snapshot dari "AsyncPagingDataDiffer" tidak kosong.
+    * Mengecek apakah ukuran snapshot dari "AsyncPagingDataDiffer" sama dengan ukuran "dummyStories".
+
+5. MapViewModel
+=> Test mendapat semua data cerita beserta lokasi yang gagal
+    * Membuat nilai kembalian dari method "getAllStoriesWithLocation" adalah "expectedResponse" bernilai failure.
+    * Dapatkan nilai "actualStories" dengan menjalankan method "getAllStoriesWithLocation".
+    * Memastikan bahwa method "getAllStoriesWithLocation" telah dijalankan.
+    * Mengecek apakah nilai "actualStories.isFailure" bernilai true.
+    * Mengecek apakah nilai "actualStories.isSuccess" bernilai false.
+    * Mengecek apakah nilai "actualStories.onFailure" tidak null.
+=> Test mendapat semua data cerita beserta lokasi yang berhasil
+    * Membuat nilai kembalian dari method "getAllStoriesWithLocation" adalah "expectedResponse" bernilai "dummyStoriesResposne".
+    * Dapatkan nilai "actualStories" dengan menjalankan method "getAllStoriesWithLocation".
+    * Memastikan bahwa method "getAllStoriesWithLocation" telah dijalankan.
+    * Mengecek apakah nilai "actualStories.isSuccess" bernilai true.
+    * Mengecek apakah nilai "actualStories.isFailure" bernilai false.
+    * Mengecek apakah nilai "actualStories.onSuccess" tidak null dan sama dengan nilai "dummyStoriesResponse".
+
+6. SettingsViewModel
+=> Test menyimpan token di lokal berhasil.
+    * Menyimpan token di lokal dengan method "storeAuthToken"
+    * Memastikan bahwa method "storeAuthToken" telah dijalankan.
+
+7. PostViewModel
+=> Test memposting cerita gagal
+    * Membuat nilai kembalian dari method "postStory" adalah "expectedResponse" bernilai failure.
+    * Dapatkan nilai "actualResponse" dengan menjalankan method "postStory".
+    * Memastikan bahwa method "postStory" telah dijalankan.
+    * Mengecek apakah nilai "actualResposne.isFailure" bernilai true.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onFailure" tidak null.
+=> Test memposting cerita berhasil
+    * Membuat nilai kembalian dari method "postStory" adalah "expectedResponse" bernilai "dummyPostResponse".
+    * Dapatkan nilai "actualResponse" dengan menjalankan method "postStory".
+    * Memastikan bahwa method "postStory" telah dijalankan.
+    * Mengecek apakah nilai "actualResponse.isSuccess" bernilai true.
+    * Mengecek apakah nilai "actualResposne.isFailure" bernilai false.
+    * Mengecek apakah nilai "actualResponse.onSuccess" tidak null dan sama dengan nilai "dummyPostResponse".

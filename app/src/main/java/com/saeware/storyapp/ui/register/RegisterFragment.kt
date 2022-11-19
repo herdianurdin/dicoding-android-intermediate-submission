@@ -16,6 +16,7 @@ import com.saeware.storyapp.databinding.FragmentRegisterBinding
 import com.saeware.storyapp.utils.AnimationUtility.setFadeViewAnimation
 import com.saeware.storyapp.utils.MessageUtility.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
@@ -28,7 +29,7 @@ class RegisterFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        _binding = FragmentRegisterBinding.inflate(LayoutInflater.from(requireActivity()))
         return binding?.root
     }
 
@@ -72,15 +73,16 @@ class RegisterFragment : Fragment() {
                 showInputError(binding?.edtPassword, getString(R.string.error_password))
             else ->
                 lifecycleScope.launchWhenResumed {
-                    viewModel.userRegister(name, email, password).observe(viewLifecycleOwner) { result ->
-                        result.onSuccess {
-                            showToast(requireContext(), getString(R.string.register_success_message))
-
-                            findNavController().navigateUp()
-                        }
-                        result.onFailure {
-                            showToast(requireContext(), getString(R.string.register_failed_message))
-                            showLoading(false)
+                    launch {
+                        viewModel.userRegister(name, email, password).observe(viewLifecycleOwner) { result ->
+                            result.onSuccess {
+                                showToast(requireContext(), getString(R.string.register_success_message))
+                                findNavController().navigateUp()
+                            }
+                            result.onFailure {
+                                showToast(requireContext(), getString(R.string.register_failed_message))
+                                showLoading(false)
+                            }
                         }
                     }
                 }

@@ -40,4 +40,10 @@
     <string name="story">Cerita %s</string>
     <string name="upload_success">Cerita berhasil di upload!</string>
     <string name="upload_failed">Cerita gagal di upload!</string>
+    <string name="map">Peta</string>
+    <string name="home">Home</string>
+    <string name="language_setting">Pengaturan Bahasa</string>
+    <string name="retry">Coba Lagi</string>
+    <string name="share_location">Berbagi lokasi</string>
+    <string name="please_active_location_service">Silakan aktifkan layanan lokasi Anda!</string>
 </resources>

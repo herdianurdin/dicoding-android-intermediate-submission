@@ -21,6 +21,7 @@ import com.saeware.storyapp.ui.main.MainActivity.Companion.EXTRA_TOKEN
 import com.saeware.storyapp.utils.AnimationUtility.setFadeViewAnimation
 import com.saeware.storyapp.utils.MessageUtility.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -33,7 +34,14 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginBinding.inflate(LayoutInflater.from(requireActivity()))
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        playAnimation()
+        init()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -49,14 +57,6 @@ class LoginFragment : Fragment() {
                 }
             }
         )
-
-        return binding?.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        playAnimation()
-        init()
     }
 
     override fun onDestroyView() {
@@ -90,20 +90,22 @@ class LoginFragment : Fragment() {
                 showInputError(binding?.edtPassword, getString(R.string.error_password))
             else ->
                 lifecycleScope.launchWhenResumed {
-                    viewModel.userLogin(email, password).observe(viewLifecycleOwner) { result ->
-                        result.onSuccess { credential ->
-                            credential.loginResult?.token?.let { token ->
-                                viewModel.storeAuthToken(token)
-                                Intent(requireContext(), MainActivity::class.java).also {
-                                    it.putExtra(EXTRA_TOKEN, token)
-                                    startActivity(it)
-                                    requireActivity().finish()
+                    launch {
+                        viewModel.userLogin(email, password).observe(viewLifecycleOwner) { result ->
+                            result.onSuccess { credential ->
+                                credential.loginResult?.token?.let { token ->
+                                    viewModel.storeAuthToken(token)
+                                    Intent(requireContext(), MainActivity::class.java).also {
+                                        it.putExtra(EXTRA_TOKEN, token)
+                                        startActivity(it)
+                                        requireActivity().finish()
+                                    }
                                 }
                             }
-                        }
-                        result.onFailure {
-                            showToast(requireContext(), getString(R.string.login_failed_message))
-                            showLoading(false)
+                            result.onFailure {
+                                showToast(requireContext(), getString(R.string.login_failed_message))
+                                showLoading(false)
+                            }
                         }
                     }
                 }
