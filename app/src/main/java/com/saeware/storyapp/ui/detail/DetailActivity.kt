@@ -12,7 +12,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.saeware.storyapp.R
-import com.saeware.storyapp.data.remote.response.Story
+import com.saeware.storyapp.data.local.entity.Story
 import com.saeware.storyapp.databinding.ActivityDetailBinding
 import com.saeware.storyapp.utils.ViewExtensions.setLocalDateFormat
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +36,8 @@ class DetailActivity : AppCompatActivity() {
 
         supportActionBar?.title = getString(R.string.story, story.name)
 
-        postponeEnterTransition()
+        supportPostponeEnterTransition()
+
         parseStoryDate(story)
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)

@@ -31,8 +31,8 @@ data class Story(
     val createdAt: String,
 
     @field:SerializedName("lat")
-    val lat: String,
+    val lat: Double?,
 
     @field:SerializedName("lon")
-    val lon: String
+    val lon: Double?
 ) : Serializable

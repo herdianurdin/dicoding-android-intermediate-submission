@@ -1,10 +1,13 @@
 package com.saeware.storyapp.ui.post
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.animation.AnimatorSet
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,10 +15,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.saeware.storyapp.R
 import com.saeware.storyapp.databinding.ActivityPostBinding
 import com.saeware.storyapp.ui.main.MainActivity.Companion.EXTRA_TOKEN
@@ -30,21 +37,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
 @AndroidEntryPoint
+@ExperimentalPagingApi
 class PostActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPostBinding
     private lateinit var currentImagePath: String
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private var getFile: File? = null
     private var token: String = ""
+    private var location: Location? = null
 
     private val viewModel: PostViewModel by viewModels()
 
@@ -97,6 +109,15 @@ class PostActivity : AppCompatActivity() {
         }
     }
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        when {
+            it[ACCESS_COARSE_LOCATION] ?: false -> getLocation()
+            else -> binding.switchLocation.isChecked = false
+        }
+    }
+
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { finish() }
@@ -122,12 +143,33 @@ class PostActivity : AppCompatActivity() {
 
     private fun init() {
         token = intent.getStringExtra(EXTRA_TOKEN)!!
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.apply {
             btnImageFromCamera.setOnClickListener { startIntentCamera() }
             btnImageFromGallery.setOnClickListener { startIntentGallery() }
             btnUploadPost.setOnClickListener { uploadStory() }
+            switchLocation.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) getLocation()
+                else location = null
+            }
         }
+    }
+
+    private fun getLocation() {
+        if (
+            ContextCompat.checkSelfPermission(
+                this@PostActivity, ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+                if (it != null) location = it
+                else {
+                    showToast(this@PostActivity, getString(R.string.please_active_location_service))
+                    binding.switchLocation.isChecked = false
+                }
+            }
+        } else requestPermissionLauncher.launch(arrayOf(ACCESS_COARSE_LOCATION))
     }
 
     private fun uploadStory() {
@@ -144,26 +186,35 @@ class PostActivity : AppCompatActivity() {
             }
             else -> {
                 lifecycleScope.launchWhenStarted {
-                    val description =
-                        edtDescription.text.toString().toRequestBody("text/plain".toMediaType())
-                    val file = reduceImageSize(getFile as File)
-                    val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-                    val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
-                        "photo",
-                        file.name,
-                        requestImageFile
-                    )
+                    launch {
+                        val description =
+                            edtDescription.text.toString().toRequestBody("text/plain".toMediaType())
+                        val file = reduceImageSize(getFile as File)
+                        val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                        val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
+                            "photo",
+                            file.name,
+                            requestImageFile
+                        )
 
-                    viewModel.postStory(
-                        token, imageMultipart, description
-                    ).observe(this@PostActivity) { result ->
-                        result.onSuccess {
-                            showToast(this@PostActivity, getString(R.string.upload_success))
-                            finish()
+                        var lat: RequestBody? = null
+                        var lon: RequestBody? = null
+
+                        if (location != null) {
+                            lat = location?.latitude.toString().toRequestBody("text/plain".toMediaType())
+                            lon = location?.longitude.toString().toRequestBody("text/plain".toMediaType())
                         }
-                        result.onFailure {
-                            showToast(this@PostActivity, getString(R.string.upload_failed))
-                            showLoading(false)
+
+                        viewModel.postStory(token, imageMultipart, description, lat, lon)
+                            .observe(this@PostActivity) { result ->
+                                result.onSuccess {
+                                showToast(this@PostActivity, getString(R.string.upload_success))
+                                finish()
+                            }
+                                result.onFailure {
+                                showToast(this@PostActivity, getString(R.string.upload_failed))
+                                showLoading(false)
+                            }
                         }
                     }
                 }
@@ -217,12 +268,13 @@ class PostActivity : AppCompatActivity() {
         val btnImageFromGallery = setFadeViewAnimation(binding.btnImageFromGallery)
         val tvLabelWriteDescription = setFadeViewAnimation(binding.tvLabelWriteDescription)
         val edtDescriptionLayout = setFadeViewAnimation(binding.edtDescriptionLayout)
+        val clContainerLocation = setFadeViewAnimation(binding.clContainerLocation)
         val btnUploadPost = setFadeViewAnimation(binding.btnUploadPost)
 
         AnimatorSet().apply {
             playSequentially(
                 ivPreviewUpload, tvLabelChooseImage, btnImageFromCamera, btnImageFromGallery,
-                tvLabelWriteDescription, edtDescriptionLayout, btnUploadPost
+                tvLabelWriteDescription, edtDescriptionLayout, clContainerLocation ,btnUploadPost
             )
             startDelay = 300
         }.start()

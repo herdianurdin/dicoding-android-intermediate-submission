@@ -7,16 +7,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.saeware.storyapp.data.remote.response.Story
+import com.saeware.storyapp.data.local.entity.Story
 import com.saeware.storyapp.databinding.ItemStoryBinding
 import com.saeware.storyapp.utils.ViewExtensions.setImageFromUrl
 import com.saeware.storyapp.utils.ViewExtensions.setLocalDateFormat
 
-class StoryAdapter : ListAdapter<Story, StoryAdapter.ListViewHolder>(DiffUtilCallback) {
-    private lateinit var onItemClickCallback: OnItemClickCallback
+class StoryAdapter :
+    PagingDataAdapter<Story, StoryAdapter.ListViewHolder>(DiffUtilCallback)
+{
+    private lateinit var onStartActivityCallback: OnStartActivityCallback
 
     inner class ListViewHolder(private var binding: ItemStoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -37,7 +39,7 @@ class StoryAdapter : ListAdapter<Story, StoryAdapter.ListViewHolder>(DiffUtilCal
                             Pair(tvDescription, "description")
                         )
 
-                    onItemClickCallback.onItemClicked(story, optionsCompat.toBundle())
+                    onStartActivityCallback.onStartActivityCallback(story, optionsCompat.toBundle())
                 }
             }
         }
@@ -50,24 +52,26 @@ class StoryAdapter : ListAdapter<Story, StoryAdapter.ListViewHolder>(DiffUtilCal
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val story = getItem(position)
-        holder.bind(holder.itemView.context, story)
+        if (story != null) {
+            holder.bind(holder.itemView.context, story)
+        }
     }
 
-    fun setOnItemClickCallback(onItemClickCallBack: OnItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallBack
+    fun setOnStartActivityCallback(onStartActivityCallback: OnStartActivityCallback) {
+        this.onStartActivityCallback = onStartActivityCallback
+    }
+
+    interface OnStartActivityCallback {
+        fun onStartActivityCallback(story: Story, bundle: Bundle?)
     }
 
     companion object {
-        private val DiffUtilCallback = object : DiffUtil.ItemCallback<Story>() {
+        val DiffUtilCallback = object : DiffUtil.ItemCallback<Story>() {
             override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean =
                 oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean =
                 oldItem == newItem
         }
-    }
-
-    interface OnItemClickCallback {
-        fun onItemClicked(story: Story, bundle: Bundle?)
     }
 }
