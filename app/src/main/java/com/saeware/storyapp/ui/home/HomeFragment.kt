@@ -88,11 +88,6 @@ class HomeFragment : Fragment() {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        getStories()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
