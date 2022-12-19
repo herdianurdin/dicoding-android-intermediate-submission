@@ -1,4 +1,4 @@
-# SIB 2022: Android Fundamental Submission
+# SIB 2022: Android Intermediate Submission
 Repositori ini mengandung source code proyek submission dari kelas "Belajar Intermediate Aplikasi Android".
 
 ## Disclaimer ⚠️
